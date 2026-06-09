@@ -216,8 +216,55 @@
     container.appendChild(btn);
     document.body.appendChild(container);
     
+    var isDragging = false;
+    var hasDragged = false;
+    var initialX, initialY, currentX = 0, currentY = 0;
+
+    btn.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        hasDragged = false;
+        initialX = e.clientX - currentX;
+        initialY = e.clientY - currentY;
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        hasDragged = true;
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        container.style.transform = 'translate(' + currentX + 'px, ' + currentY + 'px)';
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+    });
+    
+    // Touch support for mobile dragging
+    btn.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        hasDragged = false;
+        initialX = e.touches[0].clientX - currentX;
+        initialY = e.touches[0].clientY - currentY;
+    }, {passive: true});
+
+    document.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        hasDragged = true;
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+        container.style.transform = 'translate(' + currentX + 'px, ' + currentY + 'px)';
+    }, {passive: true});
+
+    document.addEventListener('touchend', function() {
+        isDragging = false;
+    });
+    
     var isOpen = false;
     btn.addEventListener('click', function() {
+        if (hasDragged) {
+            hasDragged = false;
+            return;
+        }
         isOpen = !isOpen;
         if(isOpen) {
             btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%)';
