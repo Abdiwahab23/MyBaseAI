@@ -2,12 +2,9 @@ import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import PGVector
 from langchain_core.prompts import ChatPromptTemplate
 from django.conf import settings
-
-# Initialize directories
-CHROMA_PERSIST_DIR = os.path.join(settings.BASE_DIR, "chroma_db")
 
 # Global instances for caching to drastically speed up response times
 _embeddings_cache = {}
@@ -39,13 +36,28 @@ def get_llm(user_id=None, force_default=False):
         _llm_cache[api_key] = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.3, max_retries=3)
     return _llm_cache[api_key]
 
+def _get_pg_connection():
+    conn = os.getenv("DATABASE_URL")
+    if conn and conn.startswith("postgres://"):
+        conn = conn.replace("postgres://", "postgresql+psycopg2://")
+    elif conn and conn.startswith("postgresql://"):
+        conn = conn.replace("postgresql://", "postgresql+psycopg2://")
+    return conn
+
 def get_vectorstore(user_id=None, force_default_key=False):
     global _vectorstores
     collection_name = f"user_{user_id}" if user_id else "default_collection"
-    if collection_name not in _vectorstores and os.path.exists(CHROMA_PERSIST_DIR):
+    
+    if collection_name not in _vectorstores:
         try:
-            _vectorstores[collection_name] = Chroma(persist_directory=CHROMA_PERSIST_DIR, embedding_function=get_embeddings(user_id, force_default_key), collection_name=collection_name)
-        except Exception:
+            _vectorstores[collection_name] = PGVector(
+                connection_string=_get_pg_connection(),
+                embedding_function=get_embeddings(user_id, force_default_key),
+                collection_name=collection_name,
+                use_jsonb=True
+            )
+        except Exception as e:
+            print(f"Error connecting to PGVector: {e}")
             return None
     return _vectorstores.get(collection_name)
 
@@ -60,10 +72,22 @@ def process_document(file_path, user_id=None):
     collection_name = f"user_{user_id}" if user_id else "default_collection"
     
     try:
-        _vectorstores[collection_name] = Chroma.from_documents(documents=splits, embedding=get_embeddings(user_id), persist_directory=CHROMA_PERSIST_DIR, collection_name=collection_name)
+        _vectorstores[collection_name] = PGVector.from_documents(
+            documents=splits,
+            embedding=get_embeddings(user_id),
+            collection_name=collection_name,
+            connection_string=_get_pg_connection(),
+            use_jsonb=True
+        )
     except Exception as e:
         # Fallback to default API key if user's custom key is invalid
-        _vectorstores[collection_name] = Chroma.from_documents(documents=splits, embedding=get_embeddings(user_id, force_default=True), persist_directory=CHROMA_PERSIST_DIR, collection_name=collection_name)
+        _vectorstores[collection_name] = PGVector.from_documents(
+            documents=splits,
+            embedding=get_embeddings(user_id, force_default=True),
+            collection_name=collection_name,
+            connection_string=_get_pg_connection(),
+            use_jsonb=True
+        )
         
     return True
 
