@@ -62,7 +62,8 @@
     icon.src = iconUrl;
     icon.style.width = '100%';
     icon.style.height = '100%';
-    icon.style.objectFit = 'contain';
+    icon.style.objectFit = 'cover';
+    icon.style.transform = 'scale(1.5)';
     icon.style.transition = 'all 0.3s ease';
     
     var closeIcon = document.createElement('div');

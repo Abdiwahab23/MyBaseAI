@@ -144,6 +144,7 @@
 
         .avatar-icon.ai {
             background: transparent;
+            overflow: hidden;
         }
 
         .avatar-icon.user {
@@ -285,7 +286,9 @@
     <div class="chat-layout">
         <div class="chat-header">
             <div class="header-info">
-                <img src="{% static 'MYbaseAI.png' %}" class="header-logo" alt="MybaseAI" style="background: transparent; border-radius: 50%; width: 36px; height: 36px; padding: 0; object-fit: contain;">
+                <div class="header-logo" style="overflow: hidden; border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent;">
+                    <img src="{% static 'MYbaseAI.png' %}" alt="MybaseAI" style="width: 100%; height: 100%; object-fit: cover; transform: scale(1.5);">
+                </div>
                 <div>
                     <h2>MybaseAI Support</h2>
                     <p>We usually reply instantly</p>
@@ -304,7 +307,7 @@
                     <div class="message-inner">
                         <div class="avatar-icon {{ msg.role }}">
                             {% if msg.role == 'ai' %}
-                                <img src="{% static 'MYbaseAI.png' %}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: contain;">
+                                <img src="{% static 'MYbaseAI.png' %}" style="width: 100%; height: 100%; object-fit: cover; transform: scale(1.5);">
                             {% else %}
                                 U
                             {% endif %}
