@@ -3,6 +3,9 @@
   <h1>MybaseAI</h1>
   <p><strong>A Multi-Tenant AI Knowledge Base & Customer Support Platform</strong></p>
   <p>🌍 <strong><a href="https://mybaseai.onrender.com/">Live Demo</a></strong></p>
+  
+  <br>
+  <img src="demo.png" alt="MybaseAI Dashboard Demo" style="max-width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
 </div>
 
 ---
