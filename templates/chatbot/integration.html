@@ -188,21 +188,20 @@
     btn.style.width = '60px';
     btn.style.height = '60px';
     btn.style.borderRadius = '50%';
-    btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%)';
-    btn.style.boxShadow = '0 4px 12px rgba(79, 70, 229, 0.4)';
+    btn.style.background = 'transparent';
+    btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
     btn.style.cursor = 'pointer';
     btn.style.display = 'flex';
     btn.style.alignItems = 'center';
     btn.style.justifyContent = 'center';
     btn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    btn.style.overflow = 'hidden';
     
     var icon = document.createElement('img');
     icon.src = iconUrl;
-    icon.style.width = '30px';
-    icon.style.height = '30px';
-    icon.style.borderRadius = '50%';
-    icon.style.background = 'white';
-    icon.style.padding = '2px';
+    icon.style.width = '100%';
+    icon.style.height = '100%';
+    icon.style.objectFit = 'cover';
     icon.style.transition = 'all 0.3s ease';
     
     var closeIcon = document.createElement('div');
@@ -221,6 +220,7 @@
     btn.addEventListener('click', function() {
         isOpen = !isOpen;
         if(isOpen) {
+            btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%)';
             iframeWrapper.style.display = 'block';
             setTimeout(() =&gt; {
                 iframeWrapper.style.opacity = '1';
@@ -230,6 +230,7 @@
             closeIcon.style.display = 'block';
             btn.style.transform = 'rotate(90deg)';
         } else {
+            btn.style.background = 'transparent';
             iframeWrapper.style.opacity = '0';
             iframeWrapper.style.transform = 'translateY(20px)';
             setTimeout(() =&gt; {
