@@ -82,7 +82,3 @@ To run MybaseAI locally, follow these steps:
    ```
    *Navigate to `http://127.0.0.1:8000` in your browser.*
 
----
-<div align="center">
-  <p>Built with ❤️ by Abdiwahab</p>
-</div>
