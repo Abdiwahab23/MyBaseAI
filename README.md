@@ -2,6 +2,7 @@
   <img src="static/MYbaseAI.png" alt="MybaseAI Logo" width="120" />
   <h1>MybaseAI</h1>
   <p><strong>A Multi-Tenant AI Knowledge Base & Customer Support Platform</strong></p>
+  <p>🌍 <strong><a href="https://mybaseai.onrender.com/">Live Demo</a></strong></p>
 </div>
 
 ---
@@ -16,7 +17,7 @@ Instead of relying on generic AI, companies can securely upload their internal d
 
 - **Multi-Tenant Architecture:** Total data isolation. Each registered company has its own isolated vector database and chat history.
 - **Retrieval-Augmented Generation (RAG):** Powered by Google's cutting-edge **Gemini 2.5 Flash** LLM and Gemini Embeddings for lightning-fast, highly accurate responses.
-- **Intelligent Knowledge Parsing:** Automatically chunks and vectorizes uploaded PDFs using LangChain and ChromaDB.
+- **Intelligent Knowledge Parsing:** Automatically chunks and vectorizes uploaded PDFs using LangChain and Supabase PGVector.
 - **Custom API Key Control:** System default API key provided, with the ability for power-users to seamlessly plug in their own Gemini API key via the settings panel to bypass system quotas.
 - **Passwordless Authentication:** Frictionless "Sign in with Google" OAuth integration.
 - **Embedded Widget:** One-click script tag to embed the AI assistant directly into any external company website.
@@ -28,7 +29,7 @@ MybaseAI is built using a modern, scalable, and robust technology stack:
 
 - **Backend:** [Django](https://www.djangoproject.com/) (Python)
 - **Database:** [Supabase PostgreSQL](https://supabase.com/)
-- **Vector Database:** [ChromaDB](https://www.trychroma.com/) (Locally hosted, partitioned by user ID)
+- **Vector Database:** [Supabase PGVector](https://supabase.com/docs/guides/ai/vector-columns) (Stateless storage directly inside the main Postgres database)
 - **AI/LLM Framework:** [LangChain](https://www.langchain.com/)
 - **Large Language Model:** [Google Gemini 2.5 Flash](https://ai.google.dev/)
 - **Authentication:** `django-allauth` (Google OAuth 2.0)
