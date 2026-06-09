@@ -31,6 +31,7 @@ SECRET_KEY = 'django-insecure-h!)!)isoqh+2qj#e)x1s9vr_(c_dsz7cy!9tad-qq-1mop$7r@
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 
 # Application definition
@@ -88,10 +89,11 @@ WSGI_APPLICATION = 'ai_support.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # Use PostgreSQL if DATABASE_URL is set in the environment (like on Supabase or Render)
