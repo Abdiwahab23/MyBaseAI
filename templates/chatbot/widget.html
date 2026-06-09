@@ -1,0 +1,478 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MybaseAI Chat Widget</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--gradient-primary);
+            color: white;
+            z-index: 10;
+            flex: 0 0 auto;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .header-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .header-info p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .chat-messages-wrapper {
+            flex: 1 1 0;
+            overflow-y: auto;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            scroll-behavior: smooth;
+            background: #f8fafc;
+        }
+
+        /* Scrollbar */
+        .chat-messages-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-messages-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-messages-wrapper::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .message-row {
+            padding: 1rem 1.5rem;
+            display: flex;
+            width: 100%;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-row.ai {
+            justify-content: flex-start;
+        }
+
+        .message-inner {
+            max-width: 85%;
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .message-row.user .message-inner {
+            flex-direction: row-reverse;
+        }
+
+        .avatar-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .avatar-icon.ai {
+            background: transparent;
+        }
+
+        .avatar-icon.user {
+            background: #475569;
+        }
+
+        .message-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+        }
+        
+        .message-row.ai .message-content {
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-top-left-radius: 0.2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        .message-row.user .message-content {
+            background: var(--primary-color);
+            color: white;
+            border-top-right-radius: 0.2rem;
+        }
+
+        /* Input Area */
+        .chat-input-wrapper {
+            flex: 0 0 auto;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            z-index: 10;
+        }
+
+        .chat-input-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .chat-input-form {
+            display: flex;
+            align-items: flex-end;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 0.4rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-input-form:focus-within {
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            resize: none;
+            min-height: 20px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .chat-input:focus {
+            outline: none;
+        }
+
+        .btn-send {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+            margin: 0.2rem;
+        }
+        
+        .btn-send:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-send:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 1rem 1.5rem;
+            width: 100%;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            border-top-left-radius: 0.2rem;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-layout">
+        <div class="chat-header">
+            <div class="header-info">
+                <img src="{% static 'MYbaseAI.png' %}" class="header-logo" alt="MybaseAI" style="background: white; border-radius: 8px; width: 36px; height: 36px; padding: 2px;">
+                <div>
+                    <h2>MybaseAI Support</h2>
+                    <p>We usually reply instantly</p>
+                </div>
+            </div>
+            <a href="{% url 'clear_chat' %}" style="color: white; opacity: 0.8; text-decoration: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </a>
+        </div>
+        
+        <div class="chat-messages-wrapper" id="chat-messages">
+            {% for msg in chat_messages %}
+                <div class="message-row {{ msg.role }}">
+                    <div class="message-inner">
+                        <div class="avatar-icon {{ msg.role }}">
+                            {% if msg.role == 'ai' %}
+                                <img src="{% static 'MYbaseAI.png' %}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                U
+                            {% endif %}
+                        </div>
+                        <div class="message-content">
+                            {{ msg.content|urlize|linebreaksbr }}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="message-row ai">
+                    <div class="message-inner">
+                        <div class="avatar-icon ai">
+                            <img src="{% static 'MYbaseAI.png' %}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        </div>
+                        <div class="message-content">
+                            Hello! I am the MybaseAI Assistant. How can I help you today?
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="message-inner">
+                    <div class="avatar-icon ai">
+                        <img src="{% static 'MYbaseAI.png' %}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    </div>
+                    <div class="typing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-wrapper">
+            <div class="chat-input-container">
+                <form class="chat-input-form" id="chat-form">
+                    <textarea id="chat-input" class="chat-input" placeholder="Message..." required rows="1"></textarea>
+                    <button type="submit" class="btn-send" id="send-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chat-messages');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const sendBtn = document.getElementById('send-btn');
+
+            chatInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            function scrollToBottom() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            setTimeout(scrollToBottom, 100);
+
+            function styleDjangoLinks() {
+                document.querySelectorAll('.chat-messages-wrapper a').forEach(link => {
+                    link.setAttribute('target', '_blank');
+                    link.style.color = 'inherit';
+                    link.style.textDecoration = 'underline';
+                    link.style.fontWeight = '500';
+                });
+            }
+            
+            styleDjangoLinks();
+
+            function urlify(text) {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                return text.replace(urlRegex, function(url) {
+                    return '<a href="' + url + '" target="_blank" style="color: inherit; text-decoration: underline; font-weight: 500;">' + url + '</a>';
+                });
+            }
+
+            function addMessage(content, role) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `message-row ${role}`;
+                
+                let avatarHtml = '';
+                if (role === 'ai') {
+                    avatarHtml = `<div class="avatar-icon ai"><img src="{% static 'MYbaseAI.png' %}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></div>`;
+                } else {
+                    avatarHtml = `<div class="avatar-icon user">U</div>`;
+                }
+                
+                rowDiv.innerHTML = `
+                    <div class="message-inner">
+                        ${avatarHtml}
+                        <div class="message-content">
+                            ${urlify(content).replace(/\n/g, '<br>')}
+                        </div>
+                    </div>
+                `;
+                
+                chatMessages.insertBefore(rowDiv, typingIndicator);
+                scrollToBottom();
+            }
+
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                addMessage(message, 'user');
+                chatInput.value = '';
+                chatInput.style.height = 'auto';
+                
+                typingIndicator.classList.add('active');
+                sendBtn.disabled = true;
+                chatInput.disabled = true;
+                scrollToBottom();
+                
+                try {
+                    const response = await fetch('{% url "chat_api" company_id %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: message })
+                    });
+                    
+                    typingIndicator.classList.remove('active');
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        addMessage(errorData.error || "Sorry, I encountered a network error.", 'ai');
+                        return;
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.reply) {
+                        addMessage(data.reply, 'ai');
+                    } else {
+                        addMessage("Sorry, I encountered an error processing your request.", 'ai');
+                    }
+                } catch (error) {
+                    typingIndicator.classList.remove('active');
+                    addMessage("Network error. Please try again later.", 'ai');
+                } finally {
+                    sendBtn.disabled = false;
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                    scrollToBottom();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Add to Website - MybaseAI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .integration-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .integration-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    .integration-header p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+    }
+
+    .code-container {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .code-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border-color);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .code-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .code-block {
+        padding: 1.5rem;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin: 0;
+    }
+
+    .btn-copy {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-copy:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+    .instructions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .step-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .step-number {
+        width: 32px;
+        height: 32px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .step-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .step-card p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="integration-header">
+    <h1>Add to Your Website</h1>
+    <p>Embed the MybaseAI chatbot directly onto your company website so visitors can chat with it.</p>
+</div>
+
+<div class="code-container">
+    <div class="code-header">
+        <div class="code-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            HTML Embed Code
+        </div>
+        <button class="btn-copy" onclick="copyCode(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span>Copy Code</span>
+        </button>
+    </div>
+    <pre class="code-block" id="embed-code">&lt;!-- MybaseAI Chatbot Widget --&gt;
+&lt;div id="mybaseai-widget-container" style="position: fixed; bottom: 20px; right: 20px; width: 400px; height: 600px; max-width: calc(100vw - 40px); max-height: calc(100vh - 40px); z-index: 999999; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #e2e8f0;"&gt;
+    &lt;iframe src="{{ host_url }}{% url 'chat_widget' request.user.id %}" width="100%" height="100%" frameborder="0" style="background: transparent;"&gt;&lt;/iframe&gt;
+&lt;/div&gt;</pre>
+</div>
+
+<div class="instructions">
+    <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Copy the Code</h3>
+        <p>Click the "Copy Code" button above to copy the generated HTML snippet to your clipboard.</p>
+    </div>
+    <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>Paste into your Website</h3>
+        <p>Open your main website's HTML file (usually <code>index.html</code>) and paste the code right before the closing <code>&lt;/body&gt;</code> tag.</p>
+    </div>
+    <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Test the Chatbot</h3>
+        <p>Refresh your website. You should see the chatbot floating in the bottom right corner, ready to talk to your customers!</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyCode(btn) {
+        const code = document.getElementById('embed-code').innerText;
+        const span = btn.querySelector('span');
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = span.innerText;
+            span.innerText = 'Copied!';
+            btn.style.background = '#059669';
+            btn.style.color = 'white';
+            
+            setTimeout(() => {
+                span.innerText = originalText;
+                btn.style.background = '';
+                btn.style.color = '';
+            }, 2000);
+        });
+    }
+</script>
+{% endblock %}

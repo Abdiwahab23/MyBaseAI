@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Settings - MybaseAI{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; padding-top: 2rem;">
+    <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem;">API Settings</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Configure your own Gemini API Key to bypass system limits.</p>
+
+    {% if messages %}
+        <div style="margin-bottom: 1.5rem;">
+            {% for message in messages %}
+                <div style="padding: 1rem; border-radius: 0.5rem; font-size: 0.9rem; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;{% else %}background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Gemini AI Integration</h2>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+            By default, your chatbot uses the system's shared Gemini API key. If you reach your quota or want complete control, you can provide your own API key below.
+        </p>
+
+        <form method="post" action="{% url 'settings' %}">
+            {% csrf_token %}
+            <div style="margin-bottom: 1.5rem;">
+                <label for="gemini_api_key" style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Your Gemini API Key</label>
+                <input type="password" id="gemini_api_key" name="gemini_api_key" class="form-control" value="{{ settings.gemini_api_key|default:'' }}" placeholder="AIzaSy..." style="width: 100%;">
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">Leave blank to use the system default API key.</p>
+            </div>
+            
+            <button type="submit" class="btn" style="width: 100%;">Save & Verify API Key</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
