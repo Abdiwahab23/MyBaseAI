@@ -9,3 +9,5 @@ python-dotenv
 dj-database-url
 psycopg2-binary
 django-allauth
+gunicorn
+whitenoise
