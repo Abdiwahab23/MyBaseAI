@@ -63,6 +63,7 @@
     icon.style.width = '100%';
     icon.style.height = '100%';
     icon.style.objectFit = 'cover';
+    icon.style.transform = 'scale(1.4)';
     icon.style.transition = 'all 0.3s ease';
     
     var closeIcon = document.createElement('div');
